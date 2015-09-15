@@ -122,7 +122,7 @@ class FileSaveHelper {
   /**
   Save a JSON file
   
-  :param: data NSData
+  :param: dataForJson NSData
   */
   func saveFile(dataForJson dataForJson:AnyObject) throws{
     do {
