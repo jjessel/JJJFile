@@ -19,7 +19,7 @@ class FileSaveHelper {
   }
   
   // MARK:- File Extension Types
-  enum FileExension:String {
+  enum FileExtension:String {
     case TXT = ".txt"
     case JPG = ".jpg"
     case JSON = ".json"
@@ -49,11 +49,11 @@ class FileSaveHelper {
   }
   
   // MARK:- Initializers
-  convenience init(fileName:String, fileExtension:FileExension){
+  convenience init(fileName:String, fileExtension:FileExtension){
     self.init(fileName:fileName, fileExtension:fileExtension, subDirectory:"", directory:.DocumentDirectory)
   }
   
-  convenience init(fileName:String, fileExtension:FileExension, subDirectory:String){
+  convenience init(fileName:String, fileExtension:FileExtension, subDirectory:String){
     self.init(fileName:fileName, fileExtension:fileExtension, subDirectory:subDirectory, directory:.DocumentDirectory)
   }
   
@@ -66,7 +66,7 @@ class FileSaveHelper {
   :param: saveDirectory Specify the NSSearchPathDirectory to save the file to
   
   */
-  init(fileName:String, fileExtension:FileExension, subDirectory:String, directory:NSSearchPathDirectory){
+  init(fileName:String, fileExtension:FileExtension, subDirectory:String, directory:NSSearchPathDirectory){
     self.fileName = fileName + fileExtension.rawValue
     self.subDirectory = "/\(subDirectory)"
     self.directory = directory
