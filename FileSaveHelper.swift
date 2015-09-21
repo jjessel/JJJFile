@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 class FileSaveHelper {
   
@@ -15,7 +16,7 @@ class FileSaveHelper {
   private enum FileErrors:ErrorType {
     case JsonNotSerialized
     case FileNotSaved
-    
+    case ImageNotConvertedToData
   }
   
   // MARK:- File Extension Types
@@ -109,11 +110,14 @@ class FileSaveHelper {
   }
   
   /**
-  Save the data to file.
+  Save the image to file.
   
-  :param: data NSData
+  :param: image UIImage
   */
-  func saveFile(data data:NSData) throws {
+  func saveFile(image image:UIImage) throws {
+    guard let data = UIImageJPEGRepresentation(image, 1.0) else {
+      throw FileErrors.ImageNotConvertedToData
+    }
     if !fileManager.createFileAtPath(fullyQualifiedPath, contents: data, attributes: nil){
       throw FileErrors.FileNotSaved
     }
