@@ -111,9 +111,9 @@ class FileSaveHelper {
   }
   
   /**
-  Save the data to file.
+  Save the image to file.
   
-  :param: data NSData
+  :param: image UIImage
   */
   func saveFile(image image:UIImage) throws {
     guard let data = UIImageJPEGRepresentation(image, 1.0) else {
