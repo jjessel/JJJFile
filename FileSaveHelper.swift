@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 class FileSaveHelper {
   
@@ -15,11 +16,13 @@ class FileSaveHelper {
   private enum FileErrors:ErrorType {
     case JsonNotSerialized
     case FileNotSaved
-    
+    case ImageNotConvertedToData
+    case FileNotRead
+    case FileNotFound
   }
   
   // MARK:- File Extension Types
-  enum FileExension:String {
+  enum FileExtension:String {
     case TXT = ".txt"
     case JPG = ".jpg"
     case JSON = ".json"
@@ -49,11 +52,11 @@ class FileSaveHelper {
   }
   
   // MARK:- Initializers
-  convenience init(fileName:String, fileExtension:FileExension){
+  convenience init(fileName:String, fileExtension:FileExtension){
     self.init(fileName:fileName, fileExtension:fileExtension, subDirectory:"", directory:.DocumentDirectory)
   }
   
-  convenience init(fileName:String, fileExtension:FileExension, subDirectory:String){
+  convenience init(fileName:String, fileExtension:FileExtension, subDirectory:String){
     self.init(fileName:fileName, fileExtension:fileExtension, subDirectory:subDirectory, directory:.DocumentDirectory)
   }
   
@@ -66,7 +69,7 @@ class FileSaveHelper {
   :param: saveDirectory Specify the NSSearchPathDirectory to save the file to
   
   */
-  init(fileName:String, fileExtension:FileExension, subDirectory:String, directory:NSSearchPathDirectory){
+  init(fileName:String, fileExtension:FileExtension, subDirectory:String, directory:NSSearchPathDirectory){
     self.fileName = fileName + fileExtension.rawValue
     self.subDirectory = "/\(subDirectory)"
     self.directory = directory
@@ -100,11 +103,10 @@ class FileSaveHelper {
   func saveFile(string fileContents:String) throws{
 
     do {
-      try fileContents.writeToFile(fullyQualifiedPath, atomically: false, encoding: NSUTF8StringEncoding)
+      try fileContents.writeToFile(fullyQualifiedPath, atomically: true, encoding: NSUTF8StringEncoding)
     }
     catch  {
-      print("An error:\(error)")
-      throw FileErrors.FileNotSaved
+      throw error
     }
   }
   
@@ -113,7 +115,10 @@ class FileSaveHelper {
   
   :param: data NSData
   */
-  func saveFile(data data:NSData) throws {
+  func saveFile(image image:UIImage) throws {
+    guard let data = UIImageJPEGRepresentation(image, 1.0) else {
+      throw FileErrors.ImageNotConvertedToData
+    }
     if !fileManager.createFileAtPath(fullyQualifiedPath, contents: data, attributes: nil){
       throw FileErrors.FileNotSaved
     }
@@ -122,7 +127,7 @@ class FileSaveHelper {
   /**
   Save a JSON file
   
-  :param: data NSData
+  :param: dataForJson NSData
   */
   func saveFile(dataForJson dataForJson:AnyObject) throws{
     do {
@@ -133,6 +138,47 @@ class FileSaveHelper {
     } catch {
       print(error)
       throw FileErrors.FileNotSaved
+    }
+    
+  }
+  
+  func getContentsOfFile() throws -> String {
+    guard fileExists else {
+      throw FileErrors.FileNotFound
+    }
+    
+    var returnString:String
+    do {
+       returnString = try String(contentsOfFile: fullyQualifiedPath, encoding: NSUTF8StringEncoding)
+    } catch {
+      throw FileErrors.FileNotRead
+    }
+    return returnString
+  }
+  
+  func getImage() throws -> UIImage {
+    guard fileExists else {
+      throw FileErrors.FileNotFound
+    }
+    
+    guard let image = UIImage(contentsOfFile: fullyQualifiedPath) else {
+      throw FileErrors.FileNotRead
+    }
+    
+    return image
+    
+  }
+  
+  func getJSONData() throws -> NSDictionary {
+    guard fileExists else {
+      throw FileErrors.FileNotFound
+    }
+    do {
+      let data = try NSData(contentsOfFile: fullyQualifiedPath, options: NSDataReadingOptions.DataReadingMappedIfSafe)
+      let jsonData = try NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments) as! NSDictionary
+      return jsonData
+    } catch {
+      throw FileErrors.FileNotRead
     }
     
   }
