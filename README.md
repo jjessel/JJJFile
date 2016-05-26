@@ -56,3 +56,16 @@ catch {
   print("There was an error getting the contents: \(error)")
 }
 ```
+
+## Deleting a File ##
+
+To delete a file use the `deleteFile` like so:
+
+```swift
+do {
+    try file.deleteFile()
+}
+catch {
+    print("There was an error deleting the file: \(error)")
+}
+```
