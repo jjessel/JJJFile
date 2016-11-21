@@ -9,19 +9,19 @@ There are three init methods provided. The default directory is the Document dir
 If you don't want to specify the directory or sub directory for the file use:
    
 ```swift
-let file = FileSaveHelper(fileName: "myTextFile", fileExtension: .TXT)
+let file = FileSaveHelper(fileName: "myTextFile", fileExtension: .txt)
 ```
 
 To specify a sub directory use:
 
 ```swift
-let file = FileSaveHelper(fileName: "myTextFile", fileExtension: .TXT, subDirectory: "files")
+let file = FileSaveHelper(fileName: "myTextFile", fileExtension: .txt, subDirectory: "files")
 ```
 
 To specify the sub directory and the directory use: 
 
 ```swift
-let file = FileSaveHelper(fileName: "myTextFile", fileExtension: .TXT, subDirectory: "files", directory: .DocumentDirectory)
+let file = FileSaveHelper(fileName: "myTextFile", fileExtension: .txt, subDirectory: "files", directory: .documentDirectory)
 ```
 
 
@@ -33,7 +33,7 @@ If you want to save a text file, you have to give it content to save and the sav
 let textToSave = "Saved a file in Swift!"  
 
 do {  
-	try file.saveFile(string: textToSave)
+	try file.saveFileWith(fileContents: textToSave)
 }
 catch {
 	print("There was an error saving the file: \(error)")
