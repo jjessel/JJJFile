@@ -1,5 +1,5 @@
 //
-//  FileSaveHelper.swift
+//  JJJFile.swift
 //  SavingFiles
 //
 //  Created by Jeremiah Jessel on 9/14/15.
@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-class FileSaveHelper {
+class JJJFile {
    
    // MARK:- Error Types
    
@@ -98,12 +98,12 @@ class FileSaveHelper {
    /**
     Save the contents to file
     
-    :param: fileContents A String that will be saved in the file
+    :param: contents A String that will be saved in the file
     */
-   func saveFileWith(fileContents:String) throws{
+   func save(_ contents:String) throws{
       
       do {
-         try fileContents.write(toFile: fullyQualifiedPath, atomically: true, encoding: .utf8)
+         try contents.write(toFile: fullyQualifiedPath, atomically: true, encoding: .utf8)
       }
       catch  {
          throw error
@@ -115,7 +115,7 @@ class FileSaveHelper {
     
     :param: image UIImage
     */
-   func saveFileWith(image:UIImage) throws {
+   func save(_ image:UIImage) throws {
       guard let data = UIImageJPEGRepresentation(image, 1.0) else {
          throw FileErrors.imageNotConvertedToData
       }
@@ -127,11 +127,11 @@ class FileSaveHelper {
    /**
     Save a JSON file
     
-    :param: dataForJson NSData
+    :param: data Data
     */
-   func saveFileWith(dataForJson:AnyObject) throws{
+   func save(_ data: Any) throws{
       do {
-         let jsonData = try convertObjectTo(data: dataForJson)
+         let jsonData = try convert(from: data)
          if !fileManager.createFile(atPath: fullyQualifiedPath, contents: jsonData, attributes: nil){
             throw FileErrors.fileNotSaved
          }
@@ -142,7 +142,7 @@ class FileSaveHelper {
       
    }
    
-   func getContentsOfFile() throws -> String {
+   func getContents() throws -> String {
       guard fileExists else {
          throw FileErrors.fileNotFound
       }
@@ -169,14 +169,14 @@ class FileSaveHelper {
       
    }
    
-   func getJSONData() throws -> Dictionary<String, Any> {
+   func getJSON() throws -> Dictionary<String, Any> {
       guard fileExists else {
          throw FileErrors.fileNotFound
       }
       do {
          let url = URL(fileURLWithPath: fullyQualifiedPath)
          let data = try Data(contentsOf: url)
-         let jsonData = try JSONSerialization.jsonObject(with: data as Data, options: .allowFragments) as! Dictionary<String, Any>
+         let jsonData = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as! Dictionary<String, Any>
          return jsonData
       } catch {
          throw FileErrors.fileNotRead
@@ -191,9 +191,9 @@ class FileSaveHelper {
     
     :param: data NSData
     
-    :returns: Json Serialized NSData
+    :returns: Json Serialized Data
     */
-   private func convertObjectTo(data:AnyObject) throws -> Data {
+   private func convert(from data: Any) throws -> Data {
       
       do {
          let newData = try JSONSerialization.data(withJSONObject: data, options: .prettyPrinted)
